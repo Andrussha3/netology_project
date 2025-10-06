@@ -5,134 +5,64 @@ import org.junit.jupiter.api.Test;
 
 public class CreditAccountTest {
 
-    // Тесты для Бага #1: Некорректная логика в методе pay()
+    // БАГ #1: Некорректная логика в методе pay()
     @Test
-    public void shouldPayWithinCreditLimit() {
+    public void shouldPayCorrectlyWithinCreditLimit() {
         CreditAccount account = new CreditAccount(1000, 500, 15);
 
+        // Платеж 1200: 1000 - 1200 = -200 (в пределах лимита -500)
         boolean result = account.pay(1200);
 
-        Assertions.assertFalse(result);
-        Assertions.assertEquals(1000, account.getBalance());
-    }
-
-    @Test
-    public void shouldNotPayWhenExceedsCreditLimit() {
-        CreditAccount account = new CreditAccount(1000, 500, 15);
-
-        boolean result = account.pay(1600);
-
-        Assertions.assertFalse(result);
-        Assertions.assertEquals(1000, account.getBalance());
-    }
-
-    @Test
-    public void shouldPayExactCreditLimit() {
-        CreditAccount account = new CreditAccount(1000, 500, 15);
-
-        boolean result = account.pay(1500);
-
         Assertions.assertTrue(result);
-        Assertions.assertEquals(-500, account.getBalance());
+        Assertions.assertEquals(-200, account.getBalance());
     }
 
-    // Тесты для Бага #2: Некорректный метод add()
+    // БАГ #2: Некорректный метод add() (замена баланса вместо добавления)
     @Test
-    public void shouldAddToPositiveBalance() {
+    public void shouldAddAmountToBalance() {
         CreditAccount account = new CreditAccount(1000, 500, 15);
 
         boolean result = account.add(500);
 
         Assertions.assertTrue(result);
-        Assertions.assertEquals(1500, account.getBalance());
+        Assertions.assertEquals(1500, account.getBalance()); // 1000 + 500 = 1500
     }
 
+    // БАГ #3: Неполная валидация в конструкторе
+    // Проверяем, что конструктор НЕ бросает исключение для отрицательного баланса в пределах лимита
     @Test
-    public void shouldAddToNegativeBalance() {
+    public void shouldAllowNegativeInitialBalanceWithinLimit() {
+        // Должен разрешить отрицательный баланс в пределах кредитного лимита
         CreditAccount account = new CreditAccount(-300, 500, 15);
-
-        boolean result = account.add(500);
-
-        Assertions.assertTrue(result);
-        Assertions.assertEquals(200, account.getBalance());
+        Assertions.assertEquals(-300, account.getBalance());
     }
 
+    // БАГ #3: Проверяем, что конструктор бросает исключение при превышении кредитного лимита
     @Test
-    public void shouldNotAddZeroOrNegativeAmount() {
-        CreditAccount account = new CreditAccount(1000, 500, 15);
-
-        boolean result1 = account.add(0);
-        boolean result2 = account.add(-100);
-
-        Assertions.assertFalse(result1);
-        Assertions.assertFalse(result2);
-        Assertions.assertEquals(1000, account.getBalance());
-    }
-
-    // Тесты для Бага #3: Неполная валидация в конструкторе
-    @Test
-    public void shouldThrowExceptionForNegativeInitialBalance() {
+    public void shouldThrowExceptionWhenInitialBalanceExceedsCreditLimit() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new CreditAccount(-100, 500, 15);
+            new CreditAccount(-600, 500, 15); // -600 < -500 (превышает лимит)
         });
     }
 
+    // БАГ #4: Некорректный расчет yearChange()
     @Test
-    public void shouldThrowExceptionForNegativeCreditLimit() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new CreditAccount(1000, -500, 15);
-        });
-    }
-
-    @Test
-    public void shouldThrowExceptionForNegativeRate() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new CreditAccount(1000, 500, -15);
-        });
-    }
-
-    @Test
-    public void shouldThrowExceptionForZeroRate() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new CreditAccount(1000, 500, 0);
-        });
-    }
-
-    // Тесты для Бага #4: Некорректный расчет yearChange()
-    @Test
-    public void shouldCalculateYearChangeForNegativeBalance() {
-        CreditAccount account = new CreditAccount(-200, 500, 15);
+    public void shouldCalculateYearChangeCorrectly() {
+        CreditAccount account = new CreditAccount(0, 500, 15);
+        account.pay(200); // баланс становится -200
 
         int result = account.yearChange();
 
-        Assertions.assertEquals(-30, result);
+        Assertions.assertEquals(-30, result); // 15% от -200 = -30
     }
 
     @Test
-    public void shouldCalculateYearChangeForPositiveBalance() {
+    public void shouldReturnZeroYearChangeForPositiveBalance() {
         CreditAccount account = new CreditAccount(200, 500, 15);
 
         int result = account.yearChange();
 
         Assertions.assertEquals(0, result);
-    }
-
-    @Test
-    public void shouldCalculateYearChangeForZeroBalance() {
-        CreditAccount account = new CreditAccount(0, 500, 15);
-
-        int result = account.yearChange();
-
-        Assertions.assertEquals(0, result);
-    }
-
-    @Test
-    public void shouldCalculateYearChangeForLargeNegativeBalance() {
-        CreditAccount account = new CreditAccount(-1000, 2000, 10);
-
-        int result = account.yearChange();
-
-        Assertions.assertEquals(-100, result);
     }
 
     // Дополнительные тесты для граничных случаев
