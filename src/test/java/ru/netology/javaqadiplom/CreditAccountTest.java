@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 public class CreditAccountTest {
 
-    // Тесты для конструктора (Баг #6)
+    // Тесты для конструктора 
     @Test
     public void shouldThrowExceptionForNegativeCreditLimit() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -40,7 +40,7 @@ public class CreditAccountTest {
         Assertions.assertEquals(-300, account.getBalance());
     }
 
-    // Тесты для метода pay() (Баг #1, #2, #3)
+    // Тесты для метода pay() 
     @Test
     public void shouldPayCorrectlyWithinCreditLimit() {
         CreditAccount account = new CreditAccount(1000, 500, 15);
@@ -93,7 +93,7 @@ public class CreditAccountTest {
         Assertions.assertEquals(-400, account.getBalance());
     }
 
-    // Тесты для метода add() (Баг #4)
+    // Тесты для метода add()
     @Test
     public void shouldAddAmountToPositiveBalance() {
         CreditAccount account = new CreditAccount(1000, 500, 15);
@@ -136,7 +136,7 @@ public class CreditAccountTest {
         Assertions.assertEquals(1000, account.getBalance());
     }
 
-    // Тесты для метода yearChange() (Баг #5)
+    // Тесты для метода yearChange()
     @Test
     public void shouldCalculateYearChangeForNegativeBalance() {
         CreditAccount account = new CreditAccount(-200, 500, 15);
