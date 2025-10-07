@@ -75,5 +75,14 @@ public class SavingAccountTest {
 
         Assertions.assertEquals(expected, save.yearChange());
     }
+    @Test
+    public void shouldGetMinBalance(){
+        Assertions.assertEquals(1000,save.getMinBalance());
+    }
+    @Test
+    public void shouldGetMaxBalance(){
+        Assertions.assertEquals(10000,save.getMaxBalance());
+    }
+
 
 }
