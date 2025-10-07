@@ -12,6 +12,7 @@ import java.nio.file.Files;
 public class SavingAccountTest {
     SavingAccount save = new SavingAccount(2_000, 1_000, 10_000, 5);
 
+
     @BeforeEach
     public void setup() {
         save.balance = 2_000;
